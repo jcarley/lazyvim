@@ -16,6 +16,7 @@ return {
               "**/node_modules/**",
               "**/__pycache__/**",
               "**/.venv/**",
+              "**/vendor/**",
             },
           },
           grep = {
@@ -24,6 +25,7 @@ return {
               "**/node_modules/**",
               "**/__pycache__/**",
               "**/.venv/**",
+              "**/vendor/**",
             },
           },
         },

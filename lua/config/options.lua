@@ -9,3 +9,6 @@ vim.g.snacks_animate = false
 vim.g.root_spec = { "cwd" }
 vim.g.lazyvim_ruby_lsp = "ruby_lsp"
 vim.g.lazyvim_ruby_formatter = "rubocop"
+vim.o.exrc = true
+-- Prepend mise shims to PATH
+vim.env.PATH = vim.env.HOME .. "/.local/share/mise/shims:" .. vim.env.PATH
