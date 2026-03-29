@@ -33,3 +33,15 @@ vim.api.nvim_set_keymap(
   "<cmd> GoTagAdd yaml <CR>",
   { noremap = true, silent = true, desc = "Add yaml struct tags" }
 )
+
+-- Markdown keymaps
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("markdown_keymaps", { clear = true }),
+  pattern = "markdown",
+  callback = function(ev)
+    vim.bo[ev.buf].textwidth = 80
+    vim.schedule(function()
+      vim.keymap.set("v", "=", "gw", { buffer = ev.buf, silent = true, desc = "Format selection to 80 chars" })
+    end)
+  end,
+})
