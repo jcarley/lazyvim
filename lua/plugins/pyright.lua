@@ -5,12 +5,40 @@ return {
     opts = {
       setup = {
         pyright = function(_, opts)
-          -- if a venv is active in your shell, use its python
-          local venv = vim.fn.getenv("VIRTUAL_ENV")
-          if venv ~= vim.NIL and venv ~= "" then
-            opts.settings = opts.settings or {}
-            opts.settings.python = opts.settings.python or {}
-            opts.settings.python.pythonPath = venv .. "/bin/python"
+          -- Walk up from a directory to find the closest .venv
+          local function find_venv(start_dir)
+            local dir = start_dir
+            while dir and dir ~= "/" do
+              local candidate = dir .. "/.venv"
+              if vim.uv.fs_stat(candidate .. "/bin/python") then
+                return candidate
+              end
+              dir = vim.fn.fnamemodify(dir, ":h")
+            end
+            return nil
+          end
+
+          opts.on_new_config = function(new_config, root_dir)
+            local venv = find_venv(root_dir)
+            -- fall back to VIRTUAL_ENV env var
+            if not venv then
+              local env_venv = vim.fn.getenv("VIRTUAL_ENV")
+              if env_venv ~= vim.NIL and env_venv ~= "" then
+                venv = env_venv
+              end
+            end
+
+            if venv then
+              local venv_dir = vim.fn.fnamemodify(venv, ":h")
+              local venv_name = vim.fn.fnamemodify(venv, ":t")
+              new_config.settings = vim.tbl_deep_extend("force", new_config.settings or {}, {
+                python = {
+                  pythonPath = venv .. "/bin/python",
+                  venvPath = venv_dir,
+                  venv = venv_name,
+                },
+              })
+            end
           end
 
           -- now do the normal lspconfig setup call
